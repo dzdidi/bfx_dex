@@ -29,6 +29,7 @@ module.exports = class OrderBook {
     this.orderInProgress = false;
 
     this.orderFactory = new OrderFactory();
+    this.orderServices = {};
   }
 
   async waitUntilBootstraped(seconds = 5) {
@@ -72,7 +73,12 @@ module.exports = class OrderBook {
 
     this.log('Cancelling order', JSON.stringify(this.order.toJSON()));
     await this.waitUntilOrderProcessed();
-    this.unsetOrder();
+
+    this.link.stopAnnouncing(this.order.toString());
+    this.link.stopAnnouncing(this.order.getPrice());
+
+    Object.values(this.orderServices).forEach((service) => { service.stop(); });
+    this.order = null;
   }
 
   async submitOrder(orderParam, force = false) {
@@ -95,10 +101,10 @@ module.exports = class OrderBook {
       return;
     }
 
-    const priceString = this.order.getPrice();
     this.order.fill(payload);
-    if (this.order.buyAmount === '0') {
-      this.unsetOrder(priceString);
+    this.hibernateSevice();
+    if (this.order) {
+      this.anounceToDHT();
     }
 
     handler.reply(null, payload);
@@ -155,7 +161,7 @@ module.exports = class OrderBook {
       this.handleDHTResponse(res);
     } else {
       // NOTE: orderInProgress will be set to false
-      this.handleEmptyResponse();
+      this.anounceToDHT();
     }
   }
 
@@ -168,26 +174,29 @@ module.exports = class OrderBook {
     }
   }
 
-  handleEmptyResponse() {
-    this.createOrderService(this.config.service_port);
-    this.announceOrder(this.config.service_port);
+  anounceToDHT() {
+    this.createOrderService(this.config.matchingPort);
+    this.createOrderService(this.config.exactMatchingPort);
+    this.announceOrder(this.order.getPrice(), this.config.matchingPort);
+    this.announceOrder(this.order.toString(), this.config.exactMatchingPort);
 
     this.orderInProgress = false;
   }
 
   createOrderService(port) {
-    this.log('Setting up order service');
-    if (this.orderService) {
+    this.log('Setting up order services');
+    if (this.orderServices[port]) {
       return;
     }
-    this.orderService = this.server.transport('server');
-    this.orderService.listen(port);
-    this.orderService.on('request', this.matchOrder.bind(this));
+
+    this.orderServices[port] = this.server.transport('server');
+    this.orderServices[port].listen(port);
+    this.orderServices[port].on('request', this.matchOrder.bind(this));
   }
 
-  announceOrder(port) {
-    this.log('Announcing order', this.order.getPrice(), 'on', port);
-    this.link.startAnnouncing(this.order.getPrice(), port);
+  announceOrder(key, port) {
+    this.log('Announcing order', key, 'on', port);
+    this.link.startAnnouncing(key, port);
   }
 
   setOrder(orderParam) {
@@ -196,13 +205,13 @@ module.exports = class OrderBook {
     this.order = new Order(orderParam);
   }
 
-  unsetOrder(priceString) {
-    this.order = null;
-    if (priceString) {
-      this.link.stopAnnouncing(priceString);
+  hibernateSevice() {
+    this.link.stopAnnouncing(this.order.toString());
+
+    if (this.order.buyAmount === '0') {
+      this.link.stopAnnouncing(this.order.getPrice());
+      this.order = null;
     }
-    if (this.orderService) {
-      this.orderService.stop();
-    }
+    Object.values(this.orderServices).forEach((service) => { service.stop(); });
   }
 };
