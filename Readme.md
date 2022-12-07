@@ -62,3 +62,32 @@ Run lint:
 ```
 npm run lint
 ```
+
+Example of use:
+
+```js
+const config = {
+  host: '127.0.0.1',
+  dht_port: 20001,
+  dht_bootstrap: ['127.0.0.1:20002'],
+  api_port: 30001,
+  matchingPort: 8001,
+  exactMatchingPort: 8011,
+};
+
+const orderBook = new OrderBook(config);
+await orderBook.waitUntilBootstraped();
+
+await orderBook.submitOrder({
+  buyAsset: 'USD',
+  buyAmount: '30000',
+  sellAsset: 'BTC',
+  sellAmount: '2',
+});
+// one can access order by orderBook.order. If order is closes this property will be null
+
+//... for more examples see `test/orderbook.test.js`
+
+// await orderBook.cancelOrder(); // for cancelling pending order
+await orderBook.stop(); // for gracefull shutdown (will cancel pending orders)
+```
