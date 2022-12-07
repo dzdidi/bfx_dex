@@ -82,7 +82,8 @@ module.exports = class OrderBook {
     this.setOrder(orderParam);
     this.orderInProgress = true;
 
-    const res = await this.request(this.order.getCounterPrice(), orderParam);
+    // TODO: consider move handler into submition
+    const res = await this.submitOrderRequest(orderParam);
     this.hanldeResponse(res);
   }
 
@@ -119,6 +120,16 @@ module.exports = class OrderBook {
         return resolve(res);
       });
     });
+  }
+
+  async submitOrderRequest(orderParam) {
+    const exactRes = await this.request(this.order.toCounterString(), orderParam);
+    if (exactRes) {
+      return exactRes;
+    }
+
+    const res = await this.request(this.order.getCounterPrice(), orderParam);
+    return res;
   }
 
   log(...data) {
