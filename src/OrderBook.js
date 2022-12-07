@@ -88,12 +88,13 @@ module.exports = class OrderBook {
     this.setOrder(orderParam);
     this.orderInProgress = true;
 
-    // TODO: consider move handler into submition
     const res = await this.submitOrderRequest(orderParam);
     this.hanldeResponse(res);
   }
 
   matchOrder(requestId, key, payload, handler) {
+    // XXX: things like request body validation, ratelimiting etc need to be added
+
     this.orderInProgress = true;
     if (!this.order) {
       handler.reply(new Error('ERR_MATCH_NOT_FOUND'), null);
