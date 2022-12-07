@@ -1,5 +1,16 @@
 const BigNumber = require('bignumber.js');
 
+function subtractOrders(orderA, orderB) {
+  // eslint-disable-next-line
+  orderA.buyAmount = (new BigNumber(orderA.buyAmount)).minus(orderB.sellAmount).toFixed();
+  // eslint-disable-next-line
+  orderA.sellAmount = (new BigNumber(orderA.sellAmount)).minus(orderB.buyAmount).toFixed();
+  // eslint-disable-next-line
+  orderB.buyAmount = '0';
+  // eslint-disable-next-line
+  orderB.sellAmount = '0';
+}
+
 module.exports = class BTCUSD {
   constructor(param) {
     // TODO: add validation
@@ -50,5 +61,14 @@ module.exports = class BTCUSD {
       return `1:BTC/${this.getRate()}:USD`;
     }
     return `${this.getRate()}:USD/1:BTC`;
+  }
+
+  // XXX: this function mutates both input parameter and instance properties
+  fill(counterOrder) {
+    if ((new BigNumber(this.buyAmount)).gte(counterOrder.sellAmount)) {
+      subtractOrders(this, counterOrder);
+    } else {
+      subtractOrders(counterOrder, this);
+    }
   }
 };
