@@ -67,7 +67,7 @@ module.exports = class OrderBook {
 
   async cancelOrder() {
     if (!this.order) {
-      return
+      return;
     }
 
     this.log('Cancelling order', JSON.stringify(this.order.toJSON()));
@@ -83,7 +83,7 @@ module.exports = class OrderBook {
     this.orderInProgress = true;
 
     const res = await this.request(this.order.getCounterPrice(), orderParam);
-    this.hanldeResponse(res)
+    this.hanldeResponse(res);
   }
 
   matchOrder(requestId, key, payload, handler) {
@@ -158,25 +158,25 @@ module.exports = class OrderBook {
   }
 
   handleEmptyResponse() {
-    this.createOrderService();
-    this.announceOrder();
+    this.createOrderService(this.config.service_port);
+    this.announceOrder(this.config.service_port);
 
     this.orderInProgress = false;
   }
 
-  createOrderService() {
+  createOrderService(port) {
     this.log('Setting up order service');
     if (this.orderService) {
       return;
     }
     this.orderService = this.server.transport('server');
-    this.orderService.listen(this.config.service_port);
+    this.orderService.listen(port);
     this.orderService.on('request', this.matchOrder.bind(this));
   }
 
-  announceOrder() {
-    this.log('Announcing order', this.order.getPrice(), 'on', this.config.service_port);
-    this.link.startAnnouncing(this.order.getPrice(), this.config.service_port);
+  announceOrder(port) {
+    this.log('Announcing order', this.order.getPrice(), 'on', port);
+    this.link.startAnnouncing(this.order.getPrice(), port);
   }
 
   setOrder(orderParam) {

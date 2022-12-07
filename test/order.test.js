@@ -54,10 +54,10 @@ describe('btc/usd (usd/btc) order pair', () => {
     const order = new Order(orderParam);
     const counterOrder = new Order(counterOrderParam);
 
-    expect(order.toString()).toBe(counterOrder.toCounterString())
-    expect(order.toCounterString()).toBe(counterOrder.toString())
+    expect(order.toString()).toBe(counterOrder.toCounterString());
+    expect(order.toCounterString()).toBe(counterOrder.toString());
 
-    expect(order.toString()).toBe("2:BTC/30000:USD")
-    expect(order.toCounterString()).toBe("30000:USD/2:BTC")
-  })
+    expect(order.toString()).toBe('2:BTC/30000:USD');
+    expect(order.toCounterString()).toBe('30000:USD/2:BTC');
+  });
 });

@@ -142,8 +142,8 @@ describe('OrderBook', () => {
         expect(userA.order.toJSON()).toStrictEqual(orderParam);
         await setTimeout(1000);
 
-        await userA.cancelOrder()
-        expect(userA.order).toBe(null)
+        await userA.cancelOrder();
+        expect(userA.order).toBe(null);
       });
 
       it('cancels order gracefully', async () => {
@@ -165,11 +165,11 @@ describe('OrderBook', () => {
             buyAsset: 'BTC',
             sellAmount: '30000',
             sellAsset: 'USD',
-          })
+          });
         } else {
           expect(userA.order).toBe(null);
         }
       });
-    })
+    });
   });
 });
