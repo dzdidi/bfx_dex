@@ -5,12 +5,8 @@
 3. Orders matched on the equal price without spread
 4. User can have one open order (per pair?) at time
 
-
 # Idea
-Use DHT as a matching engine. When user wants to trade they submit request to DHT
-with exchange rate as defined by their inversed order. If there is a match -
-orders get filled. If there is no entry for this price on DHT, user's node begins
-announcing
+Use DHT as a matching engine., Each node runs own DHT instance. When user wants to trade they submit request to DHT with exchange rate as defined by their inversed order. If there is a match - orders get filled. If there is no entry for this price on DHT, user's node begins announcing.
 
 # Trade-offs:
 
@@ -43,6 +39,7 @@ announcing
 - [x] serialization / deserializaiton
 
 # USAGE:
+
 Install dependencies:
 ```
 npm install
