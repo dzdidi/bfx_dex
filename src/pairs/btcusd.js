@@ -14,9 +14,9 @@ function subtractOrders(orderA, orderB) {
 module.exports = class BTCUSD {
   constructor(param) {
     // TODO: add validation
-    this.buyAsset = param.buyAsset;
+    this.buyAsset = param.buyAsset.toUpperCase();
     this.buyAmount = param.buyAmount;
-    this.sellAsset = param.sellAsset;
+    this.sellAsset = param.sellAsset.toUpperCase();
     this.sellAmount = param.sellAmount;
   }
 

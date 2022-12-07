@@ -66,13 +66,13 @@ module.exports = class OrderBook {
   }
 
   async cancelOrder() {
-    try {
-      await this.waitUntilOrderProcessed();
-    } catch (e) {
-      // TODO: handle me
-    } finally {
-      this.unsetOrder();
+    if (!this.order) {
+      return
     }
+
+    this.log('Cancelling order', JSON.stringify(this.order.toJSON()));
+    await this.waitUntilOrderProcessed();
+    this.unsetOrder();
   }
 
   async submitOrder(orderParam, force = false) {

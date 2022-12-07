@@ -58,80 +58,118 @@ describe('OrderBook', () => {
       await userC.stop();
     });
 
-    it('exactly matches order for 1on1 trade', async () => {
-      await userA.submitOrder(orderParam);
-      expect(userA.order.toJSON()).toStrictEqual(orderParam);
+    describe('Order matching', () => {
+      it('exactly matches order for 1on1 trade', async () => {
+        await userA.submitOrder(orderParam);
+        expect(userA.order.toJSON()).toStrictEqual(orderParam);
 
-      // wait for distribution through net
-      await setTimeout(1000);
+        // wait for distribution through net
+        await setTimeout(1000);
 
-      await userB.submitOrder(counterOrderParam);
-      expect(userA.order).toBe(null);
-      expect(userB.order).toBe(null);
-    });
+        await userB.submitOrder(counterOrderParam);
+        expect(userA.order).toBe(null);
+        expect(userB.order).toBe(null);
+      });
 
-    it('partially matches order for 1on1 trade', async () => {
-      await userA.submitOrder(orderParam);
-      expect(userA.order.toJSON()).toStrictEqual(orderParam);
+      it('partially matches order for 1on1 trade', async () => {
+        await userA.submitOrder(orderParam);
+        expect(userA.order.toJSON()).toStrictEqual(orderParam);
 
-      // happy path wait for distribution through net
-      await setTimeout(1000);
+        // happy path wait for distribution through net
+        await setTimeout(1000);
 
-      await userB.submitOrder(halfCounterOrderParam);
-      expect(userB.order).toBe(null);
-      expect(userA.order.toJSON()).toStrictEqual({
-        buyAmount: '15000',
-        buyAsset: 'USD',
-        sellAmount: '1',
-        sellAsset: 'BTC',
+        await userB.submitOrder(halfCounterOrderParam);
+        expect(userB.order).toBe(null);
+        expect(userA.order.toJSON()).toStrictEqual({
+          buyAmount: '15000',
+          buyAsset: 'USD',
+          sellAmount: '1',
+          sellAsset: 'BTC',
+        });
+      });
+
+      it('exactly matches order for 1on2 trade', async () => {
+        await userA.submitOrder(orderParam);
+        expect(userA.order.toJSON()).toStrictEqual(orderParam);
+        await setTimeout(1000);
+
+        await Promise.all([
+          userB.submitOrder(counterOrderParam),
+          userC.submitOrder(counterOrderParam),
+        ]);
+
+        expect(userA.order).toBe(null);
+        const closed = [userB, userC].filter((u) => u.order === null);
+        expect(closed.length === 1);
+      });
+
+      it('partially matches order for 1on2 trade', async () => {
+        await userA.submitOrder(orderParam);
+        expect(userA.order.toJSON()).toStrictEqual(orderParam);
+        await setTimeout(1000);
+
+        await Promise.all([
+          userB.submitOrder(halfCounterOrderParam),
+          userC.submitOrder(halfCounterOrderParam),
+        ]);
+
+        expect(userA.order).toBe(null);
+        const closed = [userB, userC].filter((u) => u.order === null);
+        expect(closed.length === 2);
+      });
+
+      it('partially matches order for 1on2 trade wiht leftover', async () => {
+        await userA.submitOrder(orderParam);
+        expect(userA.order.toJSON()).toStrictEqual(orderParam);
+        await setTimeout(1000);
+
+        await Promise.all([
+          userC.submitOrder(counterOrderParam),
+          userB.submitOrder(halfCounterOrderParam),
+        ]);
+
+        expect(userA.order).toBe(null);
+        const closed = [userB, userC].filter((u) => u.order === null);
+        // either "half" is closed and "full" is half-closed
+        // or "full" is closed and "half" is open
+        expect(closed.length >= 1);
       });
     });
 
-    it('exactly matches order for 1on2 trade', async () => {
-      await userA.submitOrder(orderParam);
-      expect(userA.order.toJSON()).toStrictEqual(orderParam);
-      await setTimeout(1000);
+    describe('Order closing', () => {
+      it('allows to cancel orders', async () => {
+        await userA.submitOrder(orderParam);
+        expect(userA.order.toJSON()).toStrictEqual(orderParam);
+        await setTimeout(1000);
 
-      await Promise.all([
-        userB.submitOrder(counterOrderParam),
-        userC.submitOrder(counterOrderParam),
-      ]);
+        await userA.cancelOrder()
+        expect(userA.order).toBe(null)
+      });
 
-      expect(userA.order).toBe(null);
-      const closed = [userB, userC].filter((u) => u.order === null);
-      expect(closed.length === 1);
-    });
+      it('cancels order gracefully', async () => {
+        await userA.submitOrder(orderParam);
+        expect(userA.order.toJSON()).toStrictEqual(orderParam);
+        await setTimeout(1000);
 
-    it('partially matches order for 1on2 trade', async () => {
-      await userA.submitOrder(orderParam);
-      expect(userA.order.toJSON()).toStrictEqual(orderParam);
-      await setTimeout(1000);
+        await Promise.all([
+          userA.cancelOrder(),
+          userB.submitOrder(counterOrderParam),
+        ]);
+        await setTimeout(1000);
 
-      await Promise.all([
-        userB.submitOrder(halfCounterOrderParam),
-        userC.submitOrder(halfCounterOrderParam),
-      ]);
-
-      expect(userA.order).toBe(null);
-      const closed = [userB, userC].filter((u) => u.order === null);
-      expect(closed.length === 2);
-    });
-
-    it('partially matches order for 1on2 trade wiht leftover', async () => {
-      await userA.submitOrder(orderParam);
-      expect(userA.order.toJSON()).toStrictEqual(orderParam);
-      await setTimeout(1000);
-
-      await Promise.all([
-        userC.submitOrder(counterOrderParam),
-        userB.submitOrder(halfCounterOrderParam),
-      ]);
-
-      expect(userA.order).toBe(null);
-      const closed = [userB, userC].filter((u) => u.order === null);
-      // either "half" is closed and "full" is half-closed
-      // or "full" is closed and "half" is open
-      expect(closed.length >= 1);
-    });
+        expect(userA.order).toBe(null);
+        // orderB is either closed or not what we check that promise all is not failing on timeout
+        if (userB.order) {
+          expect(userB.order.toJSON()).toStrictEqual({
+            buyAmount: '2',
+            buyAsset: 'BTC',
+            sellAmount: '30000',
+            sellAsset: 'USD',
+          })
+        } else {
+          expect(userA.order).toBe(null);
+        }
+      });
+    })
   });
 });
