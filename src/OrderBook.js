@@ -83,15 +83,7 @@ module.exports = class OrderBook {
     this.orderInProgress = true;
 
     const res = await this.request(this.order.getCounterPrice(), orderParam);
-    if (res) {
-      // NOTE: orderInProgress is still true
-      this.handleDHTResponse(res);
-      return;
-    }
-    this.createOrderService();
-    this.announceOrder();
-
-    this.orderInProgress = false;
+    this.hanldeResponse(res)
   }
 
   matchOrder(requestId, key, payload, handler) {
@@ -146,6 +138,16 @@ module.exports = class OrderBook {
     this.submitOrder(res, true);
   }
 
+  hanldeResponse(res) {
+    if (res) {
+      // NOTE: orderInProgress is still true
+      this.handleDHTResponse(res);
+    } else {
+      // NOTE: orderInProgress will be set to false
+      this.handleEmptyResponse();
+    }
+  }
+
   handleDHTResponse(res) {
     this.log('Order match found on DHT', JSON.stringify(this.order));
     if (res.buyAmount === '0') {
@@ -153,6 +155,13 @@ module.exports = class OrderBook {
     } else {
       this.updateOrder(res);
     }
+  }
+
+  handleEmptyResponse() {
+    this.createOrderService();
+    this.announceOrder();
+
+    this.orderInProgress = false;
   }
 
   createOrderService() {
