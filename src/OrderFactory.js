@@ -11,6 +11,6 @@ module.exports = class OrderFactory {
   }
 
   getOrder(pair) {
-    // return this.paris[pair.toUpperCase()];
+    return this.pairs[pair.toUpperCase()];
   }
 };

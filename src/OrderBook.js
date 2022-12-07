@@ -4,7 +4,7 @@ const { Grape } = require('grenache-grape');
 const { PeerRPCServer, PeerRPCClient } = require('grenache-nodejs-http');
 const Link = require('grenache-nodejs-link');
 
-const { OrderFactory } = require('./OrderFactory');
+const OrderFactory =  require('./OrderFactory');
 
 module.exports = class OrderBook {
   constructor(config) {
@@ -28,7 +28,7 @@ module.exports = class OrderBook {
     this.order = null;
     this.orderInProgress = false;
 
-    // this.orderFactory = new OrderFactory();
+    this.orderFactory = new OrderFactory();
   }
 
   async waitUntilBootstraped(seconds = 5) {
