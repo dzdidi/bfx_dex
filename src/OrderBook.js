@@ -26,6 +26,8 @@ module.exports = class OrderBook {
     this.grape.on('ready', () => { this.bootstraped = true; });
 
     this.order = null;
+    this.orderInProgress = false;
+
     this.orderFactory = new OrderFactory();
     this.orderServices = {};
   }
@@ -43,6 +45,19 @@ module.exports = class OrderBook {
     throw new Error('Failed to bootstrap dht on time');
   }
 
+  async waitUntilOrderProcessed(seconds = 5) {
+    let remaining = seconds;
+    while (remaining > 0) {
+      if (!this.orderInProgress) return;
+
+      // eslint-disable-next-line
+      await setTimeout(1000);
+      remaining -= 1;
+    }
+
+    throw new Error('Failed to process order on time');
+  }
+
   async stop() {
     await this.cancelOrder();
     this.client.stop();
@@ -57,6 +72,7 @@ module.exports = class OrderBook {
     }
 
     this.log('Cancelling order', JSON.stringify(this.order.toJSON()));
+    await this.waitUntilOrderProcessed();
 
     this.link.stopAnnouncing(this.order.toString());
     this.link.stopAnnouncing(this.order.getPrice());
@@ -66,10 +82,11 @@ module.exports = class OrderBook {
   }
 
   async submitOrder(orderParam, force = false) {
-    if (!force && this.order) {
+    if (!force && (this.orderInProgress || this.order)) {
       throw new Error(`Can process only one order at time: ${JSON.stringify(this.config)}`);
     }
     this.setOrder(orderParam);
+    this.orderInProgress = true;
 
     // TODO: consider move handler into submition
     const res = await this.submitOrderRequest(orderParam);
@@ -77,8 +94,10 @@ module.exports = class OrderBook {
   }
 
   matchOrder(requestId, key, payload, handler) {
+    this.orderInProgress = true;
     if (!this.order) {
       handler.reply(new Error('ERR_MATCH_NOT_FOUND'), null);
+      this.orderInProgress = false;
       return;
     }
 
@@ -89,6 +108,7 @@ module.exports = class OrderBook {
     }
 
     handler.reply(null, payload);
+    this.orderInProgress = false;
   }
 
   async request(key, value, options = { timeout: 1000 }) {
@@ -126,6 +146,7 @@ module.exports = class OrderBook {
   completeOrder() {
     this.log('Order is complete', JSON.stringify(this.order));
     this.order = null;
+    this.orderInProgress = false;
   }
 
   updateOrder(res) {
@@ -136,8 +157,10 @@ module.exports = class OrderBook {
 
   hanldeResponse(res) {
     if (res) {
+      // NOTE: orderInProgress is still true
       this.handleDHTResponse(res);
     } else {
+      // NOTE: orderInProgress will be set to false
       this.anounceToDHT();
     }
   }
@@ -156,6 +179,8 @@ module.exports = class OrderBook {
     this.createOrderService(this.config.exactMatchingPort);
     this.announceOrder(this.order.getPrice(), this.config.matchingPort);
     this.announceOrder(this.order.toString(), this.config.exactMatchingPort);
+
+    this.orderInProgress = false;
   }
 
   createOrderService(port) {
