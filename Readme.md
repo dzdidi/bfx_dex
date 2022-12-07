@@ -12,6 +12,10 @@ with exchange rate as defined by their inversed order. If there is a match -
 orders get filled. If there is no entry for this price on DHT, user's node begins
 announcing
 
+# Trade-offs:
+One order at time
+Restricted to single pair (new pairs can be added as separate classes)
+
 
 # TODO:
 ## OrderBook
@@ -19,6 +23,7 @@ announcing
 - [ ] methods for order submission
 - [ ] methods for remaining order re-creation
 
+- [ ] cancel order
 - [ ] store / retrieve history
 - [ ] create orders according to users balance
 
