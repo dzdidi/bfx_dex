@@ -1,8 +1,10 @@
+const { setTimeout } = require('node:timers/promises');
+
 const { Grape } = require('grenache-grape');
 const { PeerRPCServer, PeerRPCClient } = require('grenache-nodejs-http');
 const Link = require('grenache-nodejs-link');
 
-const { setTimeout } = require('node:timers/promises');
+const { OrderFactory } = require('./OrderFactory');
 
 module.exports = class OrderBook {
   constructor(config) {
@@ -24,7 +26,9 @@ module.exports = class OrderBook {
     this.grape.on('ready', () => { this.bootstraped = true; });
 
     this.order = null;
-    this.orderInProgress = false
+    this.orderInProgress = false;
+
+    // this.orderFactory = new OrderFactory();
   }
 
   async waitUntilBootstraped(seconds = 5) {
@@ -69,7 +73,6 @@ module.exports = class OrderBook {
     // TODO: lookup if not found start anouncing
     // if found and filled completely - good
     // if found and filled partially - call itself
-
 
     // TODO: move to constructor OR do this only if lookup failed
     // this.orderService = this.server.transport('server');
