@@ -29,4 +29,12 @@ describe('btc/usd (usd/btc) order pair', () => {
 
     expect(order.getRate()).toBe(counterOrder.getRate())
   });
+
+  it('returns order price', () => {
+    let order = new Order(orderParam)
+    let counterOrder = new Order(counterOrderParam)
+
+    expect(order.getPrice()).toBe(counterOrder.getCounterPrice())
+    expect(order.getCounterPrice()).toBe(counterOrder.getPrice())
+  })
 })
