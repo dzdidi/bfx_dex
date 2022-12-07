@@ -1,3 +1,4 @@
+const assert = require('node:assert');
 const BTCUSD = require('./pairs/btcusd');
 
 module.exports = class OrderFactory {
@@ -8,7 +9,20 @@ module.exports = class OrderFactory {
       USDBTC: BTCUSD,
     };
 
-    // TODO: for all pairs check if they implement the same interface
+    // sloppy but better than nothing enforcement of interface
+    const publicMethods = [
+      'toJSON',
+      'toString',
+      'getPrice',
+      'getCounterPrice',
+      'fill',
+    ];
+
+    Object.values(this.pairs).forEach((pair) => {
+      publicMethods.forEach((method) => {
+        assert(typeof pair.prototype[method] === 'function');
+      });
+    });
   }
 
   getOrder(pair) {
