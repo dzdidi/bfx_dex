@@ -15,6 +15,7 @@ announcing
 # Trade-offs:
 - One order at time
 - Restricted to single pair (new pairs can be added as separate classes)
+- Exact order matching is not prioritized
 
 
 # TODO:
@@ -27,14 +28,16 @@ announcing
 - [ ] store / retrieve history
 - [ ] create orders according to users balance
 
+- [ ] exact order matching as a first priority
+
 ## OrderFactory
-- [ ] implement (to show how new pairs can be added)
+- [x] implement (to show how new pairs can be added)
 
 ## Order
-- [ ] order creation
-- [ ] exchange rate calculation
+- [x] order creation
+- [x] exchange rate calculation
 - [ ] order inversion
-- [ ] serialization / deserializaiton
+- [x] serialization / deserializaiton
 
 # USAGE:
 Install dependencies:
