@@ -6,7 +6,10 @@
 4. User can have one open order (per pair?) at time
 
 # Idea
-Use DHT as a matching engine., Each node runs own DHT instance. When user wants to trade they submit request to DHT with exchange rate as defined by their inversed order. If there is a match - orders get filled. If there is no entry for this price on DHT, user's node begins announcing.
+Use DHT as a matching engine. Each node runs own DHT instance. When user wants to trade they submit requests to DHT: 
+1. Lookup exact order match and complete operation if one found and filled
+2. Lookup up by exchange rate and if our order closed completely - complete. Retry with leftover.
+3. If not match found - start announcing by both exact order and by price.
 
 # Trade-offs:
 
@@ -18,8 +21,6 @@ Use DHT as a matching engine., Each node runs own DHT instance. When user wants 
 
 - While DHT supports storing data, for balance and historical trades to be stored on DHT it might require adding consensus for sequence of trades.
 
-- Exact order matching is not prioritized
-
 # TODO:
 ## OrderBook
 - [x] initialize grenache for each client
@@ -28,7 +29,7 @@ Use DHT as a matching engine., Each node runs own DHT instance. When user wants 
 - [x] cancel order
 - [x] exact order matching as a first priority
 
-- [ ] store / retrieve history (can store closed orders on dht but need makes sense with signature only)
+- [ ] store / retrieve history (can store closed orders on dht but makes sense with signature only)
 
 ## OrderFactory
 - [x] implement (to show how new pairs can be added)
@@ -56,7 +57,3 @@ Run lint:
 ```
 npm run lint
 ```
-
-
-
-
