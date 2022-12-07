@@ -5,6 +5,7 @@ module.exports = class OrderFactory {
     // TODO: pass something like user id?
     this.pairs = {
       BTCUSD,
+      USDBTC: BTCUSD,
     };
 
     // TODO: for all pairs check if they implement the same interface

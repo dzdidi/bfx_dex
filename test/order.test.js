@@ -1,29 +1,9 @@
 const { OrderFactory } = require('../index');
+const { orderParam, counterOrderParam, halfCounterOrderParam } = require('./orders');
 
 describe('btc/usd (usd/btc) order pair', () => {
   const orderFactory = new OrderFactory();
   const Order = orderFactory.getOrder('BTCUSD');
-
-  const orderParam = {
-    buyAsset: 'USD',
-    buyAmount: '30000',
-    sellAsset: 'BTC',
-    sellAmount: '2',
-  };
-
-  const counterOrderParam = {
-    sellAsset: 'USD',
-    sellAmount: '30000',
-    buyAsset: 'BTC',
-    buyAmount: '2',
-  };
-
-  const halfCounterOrderParam = {
-    sellAsset: 'USD',
-    sellAmount: '15000',
-    buyAsset: 'BTC',
-    buyAmount: '1',
-  };
 
   it('constructs and serializes to/from object', () => {
     const order = new Order(orderParam);

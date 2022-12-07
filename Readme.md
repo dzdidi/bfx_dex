@@ -21,8 +21,8 @@ announcing
 # TODO:
 ## OrderBook
 - [x] initialize grenache for each client
-- [ ] methods for order submission
-- [ ] methods for remaining order re-creation
+- [x] methods for order submission
+- [x] methods for remaining order re-creation
 
 - [ ] cancel order
 - [ ] store / retrieve history
