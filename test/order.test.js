@@ -49,4 +49,15 @@ describe('btc/usd (usd/btc) order pair', () => {
     expect(counterOrder.buyAmount).toBe('0');
     expect(counterOrder.sellAmount).toBe('0');
   });
+
+  it('serializes to string and counterString', () => {
+    const order = new Order(orderParam);
+    const counterOrder = new Order(counterOrderParam);
+
+    expect(order.toString()).toBe(counterOrder.toCounterString())
+    expect(order.toCounterString()).toBe(counterOrder.toString())
+
+    expect(order.toString()).toBe("2:BTC/30000:USD")
+    expect(order.toCounterString()).toBe("30000:USD/2:BTC")
+  })
 });

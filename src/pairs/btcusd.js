@@ -29,6 +29,14 @@ module.exports = class BTCUSD {
     };
   }
 
+  toString() {
+    return `${this.sellAmount}:${this.sellAsset}/${this.buyAmount}:${this.buyAsset}`;
+  }
+
+  toCounterString() {
+    return this.toString().split('/').reverse().join('/');
+  }
+
   // For the pair rates always need to be denominated in the same currency
   // regardless if it is buy or sell. Base unit of account must be the same
   getRate() {

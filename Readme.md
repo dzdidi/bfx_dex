@@ -35,7 +35,7 @@ Use DHT as a matching engine., Each node runs own DHT instance. When user wants 
 ## Order
 - [x] order creation
 - [x] exchange rate calculation
-- [ ] order inversion (for exact order matching)
+- [x] order inversion (for exact order matching)
 - [x] serialization / deserializaiton
 
 # USAGE:
