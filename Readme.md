@@ -26,11 +26,13 @@ Use DHT as a matching engine., Each node runs own DHT instance. When user wants 
 - [x] methods for order submission
 - [x] methods for remaining order re-creation
 - [x] cancel order
+- [x] exact order matching as a first priority
+
 - [ ] store / retrieve history (can store closed orders on dht but need makes sense with signature only)
-- [ ] exact order matching as a first priority
 
 ## OrderFactory
 - [x] implement (to show how new pairs can be added)
+- [x] interface enforcement
 
 ## Order
 - [x] order creation
