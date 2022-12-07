@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest ./test --detectOpenHandles",
-    "lint": "npx eslint --fix ./src"
+    "lint": "npx eslint --fix ./src ./test"
   },
   "author": "deniszalessky@gmail.com",
   "license": "ISC",
