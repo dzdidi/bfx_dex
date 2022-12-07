@@ -1,15 +1,16 @@
-# Assumptions:
-
-1. Clients balance handling lays outside of the scope of this task
-2. One trade pair implementation is sufficient
-3. Orders matched on the equal price without spread
-4. User can have one open order (per pair?) at time
-
 # Idea
 Use DHT as a matching engine. Each node runs own DHT instance. When user wants to trade they submit requests to DHT: 
 1. Lookup exact order match and complete operation if one found and filled
 2. Lookup up by exchange rate and if our order closed completely - complete. Retry with leftover.
 3. If not match found - start announcing by both exact order and by price.
+
+# Assumptions:
+1. Clients balance handling lays outside of the scope of this task
+2. One trade pair implementation is sufficient
+3. Orders matched on the equal price without spread
+4. User can have one open order (per pair?) at time
+
+## Warning: There are missing data validations, ratelimitings and other MUST HAVE practices
 
 # Trade-offs:
 
