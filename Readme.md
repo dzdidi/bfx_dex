@@ -13,8 +13,8 @@ orders get filled. If there is no entry for this price on DHT, user's node begin
 announcing
 
 # Trade-offs:
-One order at time
-Restricted to single pair (new pairs can be added as separate classes)
+- One order at time
+- Restricted to single pair (new pairs can be added as separate classes)
 
 
 # TODO:
@@ -26,6 +26,9 @@ Restricted to single pair (new pairs can be added as separate classes)
 - [ ] cancel order
 - [ ] store / retrieve history
 - [ ] create orders according to users balance
+
+## OrderFactory
+- [ ] implement (to show how new pairs can be added)
 
 ## Order
 - [ ] order creation
