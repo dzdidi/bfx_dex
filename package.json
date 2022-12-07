@@ -12,5 +12,11 @@
     "grenache-grape": "^0.9.11",
     "grenache-nodejs-http": "^0.7.12",
     "grenache-nodejs-link": "^0.7.12"
+  },
+  "devDependencies": {
+    "eslint": "^8.29.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^29.3.1"
   }
 }
