@@ -10,6 +10,7 @@
   "author": "deniszalessky@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "bignumber.js": "^9.1.1",
     "grenache-grape": "^0.9.11",
     "grenache-nodejs-http": "^0.7.12",
     "grenache-nodejs-link": "^0.7.12"

@@ -11,8 +11,22 @@ describe('btc/usd (usd/btc) order pair', () => {
     sellAmount: '2'
   };
 
+  const counterOrderParam = {
+    sellAsset: 'USD',
+    sellAmount: '30000',
+    buyAsset: 'BTC',
+    buyAmount: '2'
+  };
+
   it('constructs and serializes to/from object', () => {
     let order = new Order(orderParam)
     expect(order.toJSON()).toStrictEqual(orderParam)
-  })
+  });
+
+  it('returns exchange rate denominated in USD', () => {
+    let order = new Order(orderParam)
+    let counterOrder = new Order(counterOrderParam)
+
+    expect(order.getRate()).toBe(counterOrder.getRate())
+  });
 })

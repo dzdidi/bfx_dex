@@ -4,7 +4,7 @@ const { Grape } = require('grenache-grape');
 const { PeerRPCServer, PeerRPCClient } = require('grenache-nodejs-http');
 const Link = require('grenache-nodejs-link');
 
-const OrderFactory =  require('./OrderFactory');
+const OrderFactory = require('./OrderFactory');
 
 module.exports = class OrderBook {
   constructor(config) {
